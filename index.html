@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#C0392B">
+<title>Wellness · Granada CF</title>
+<style>
+:root{--red:#C0392B;--red-d:#922B21;--red-l:#F9EBEA;--white:#FFFFFF;--off:#F7F7F7;--gray:#888;--gray-l:#F2F2F2;--text:#1A1A1A;--text-s:#555;--border:#E8E8E8;--green:#1D9E75;--green-l:#E8F8F3;--amber:#E67E22;--amber-l:#FEF5EC;--radius:14px;--shadow:0 2px 16px rgba(0,0,0,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:Arial,sans-serif;background:var(--off);color:var(--text);min-height:100vh;padding-bottom:40px;}
+.pin-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:var(--red);}
+.pin-logo{width:90px;height:90px;background:white;border-radius:50%;padding:8px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.pin-logo img{width:100%;height:100%;object-fit:contain;}
+.pin-club{font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:4px;}
+.pin-title{font-size:32px;font-weight:800;color:white;margin-bottom:6px;}
+.pin-sub{font-size:14px;color:rgba(255,255,255,0.75);margin-bottom:32px;text-align:center;line-height:1.5;}
+.pin-card{background:white;border-radius:20px;padding:28px 24px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.pin-player-name{font-size:20px;font-weight:800;color:var(--text);text-align:center;margin-bottom:4px;min-height:26px;}
+.pin-dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all 0.2s;}
+.pin-dot.filled{background:var(--red);border-color:var(--red);transform:scale(1.1);}
+.pin-dot.error{background:#E74C3C;border-color:#E74C3C;animation:shake 0.4s ease;}
+.pin-dot.success{background:var(--green);border-color:var(--green);}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.pin-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:22px;font-weight:700;letter-spacing:0.18em;text-align:center;color:var(--text);background:var(--off);-webkit-appearance:none;outline:none;margin-bottom:12px;}
+.pin-btn{width:100%;background:var(--red);color:white;border:none;border-radius:12px;padding:14px;font-size:17px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+.pin-error{font-size:12px;color:var(--red-d);text-align:center;margin-top:10px;min-height:16px;font-weight:600;}
+.pin-hint{font-size:11px;color:var(--gray);text-align:center;margin-top:8px;}
+.app-header{background:var(--red);position:sticky;top:0;z-index:100;}
+.header-top{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;}
+.logo-wrap{width:44px;height:44px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;padding:3px;}
+.logo-wrap img{width:100%;height:100%;object-fit:contain;}
+.header-club{font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:0.12em;text-transform:uppercase;}
+.header-title{font-size:20px;font-weight:800;color:white;letter-spacing:0.02em;line-height:1.1;}
+.player-chip{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:white;}
+.progress-wrap{padding:0 20px 12px;}
+.progress-meta{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:6px;font-weight:500;}
+.progress-track{height:4px;background:rgba(255,255,255,0.25);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:white;border-radius:2px;transition:width 0.4s;}
+.mode-switcher{display:flex;background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px;}
+.mode-btn{flex:1;padding:13px 8px;border:none;background:transparent;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent;}
+.mode-btn.active{color:var(--red);border-bottom-color:var(--red);background:var(--red-l);}
+.main{padding:14px 16px 0;max-width:520px;margin:0 auto;}
+.limit-notice{background:var(--amber-l);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#7E5109;font-weight:500;}
+.block{background:white;border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);animation:fadeIn 0.3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.block:nth-child(2){animation-delay:.05s}.block:nth-child(3){animation-delay:.10s}
+.block:nth-child(4){animation-delay:.15s}.block:nth-child(5){animation-delay:.20s}
+.block-header{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--border);}
+.block-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.block-title{font-size:15px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;}
+.block-sub{font-size:11px;color:var(--text-s);margin-top:1px;}
+.block-pts{font-size:11px;font-weight:600;color:var(--gray);background:var(--gray-l);padding:3px 8px;border-radius:10px;}
+.block-body{padding:14px 16px;display:flex;flex-direction:column;gap:18px;}
+.q-label{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.3;}
+.q-hint{font-size:12px;color:var(--text-s);margin-bottom:10px;line-height:1.4;}
+.scale-buttons{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.scale-btn{aspect-ratio:1;border:1.5px solid var(--border);border-radius:10px;background:var(--off);font-size:20px;font-weight:700;color:var(--gray);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;-webkit-appearance:none;}
+.scale-btn:active{transform:scale(0.94);}
+.scale-btn.sel{border-color:transparent;color:white;transform:scale(1.06);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.scale-btn.s1.sel{background:#C0392B;}.scale-btn.s2.sel{background:#E74C3C;}
+.scale-btn.s3.sel{background:#E67E22;}.scale-btn.s4.sel{background:#27AE60;}
+.scale-btn.s5.sel{background:#1D9E75;}
+.scale-ends{display:flex;justify-content:space-between;margin-top:5px;font-size:11px;color:var(--gray);}
+.radio-list{display:flex;flex-direction:column;gap:6px;}
+.radio-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;background:var(--off);}
+.radio-item.sel{border-color:var(--red);background:var(--red-l);}
+.radio-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.radio-item.sel .radio-dot{border-color:var(--red);background:var(--red);}
+.radio-item.sel .radio-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+.radio-text{font-size:13px;font-weight:500;color:var(--text);}
+.radio-item.sel .radio-text{color:var(--red-d);font-weight:600;}
+.phase-list{display:flex;flex-direction:column;gap:6px;}
+.phase-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;background:var(--off);}
+.phase-item.sel{border-color:var(--red);background:var(--red-l);}
+.phase-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.phase-name{font-size:13px;font-weight:600;color:var(--text);}
+.phase-days{font-size:11px;color:var(--text-s);}
+.chip-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:7px 13px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:500;color:var(--text-s);background:var(--off);cursor:pointer;transition:all 0.15s;user-select:none;}
+.chip.sel{background:var(--red-l);border-color:var(--red);color:var(--red-d);font-weight:600;}
+.chip.none.sel{background:var(--green-l);border-color:var(--green);color:#085041;}
+.text-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:Arial,sans-serif;font-size:14px;color:var(--text);background:var(--off);transition:border-color 0.15s;-webkit-appearance:none;}
+.text-input:focus{outline:none;border-color:var(--red);background:white;}
+.text-input::placeholder{color:#AAAAAA;}
+textarea.text-input{resize:none;min-height:80px;line-height:1.5;}
+.cycle-note{background:#FEF9F9;border:1px solid #F5C6C6;border-radius:8px;padding:8px 12px;font-size:11px;color:#922B21;margin-bottom:12px;line-height:1.5;}
+.srpe-list{display:flex;flex-direction:column;gap:6px;}
+.srpe-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;background:var(--off);}
+.srpe-row:active{transform:scale(0.98);}
+.srpe-row.sel{border-color:var(--red);background:var(--red-l);}
+.srpe-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;}
+.submit-btn{width:100%;background:var(--red);color:white;border:none;border-radius:var(--radius);padding:16px;font-size:18px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;box-shadow:0 4px 14px rgba(192,57,43,0.4);}
+.submit-btn:active{transform:scale(0.98);background:var(--red-d);}
+.submit-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;}
+.privacy-note{text-align:center;font-size:11px;color:var(--gray);margin-top:10px;}
+.logout-btn{background:none;border:none;color:rgba(255,255,255,0.5);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all 0.15s;}
+.logout-btn:active{color:white;background:rgba(255,255,255,0.15);}
+.fullpage{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;background:var(--off);}
+.fullpage.show{display:flex;}
+.fp-logo{width:80px;height:80px;border-radius:50%;background:white;padding:8px;box-shadow:var(--shadow);margin-bottom:20px;}
+.fp-logo img{width:100%;height:100%;object-fit:contain;}
+.fp-icon{font-size:52px;margin-bottom:12px;}
+.fp-title{font-size:26px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.fp-text{font-size:15px;color:var(--text-s);line-height:1.6;margin-bottom:24px;}
+.fp-card{background:white;border-radius:var(--radius);padding:20px 24px;width:100%;max-width:300px;box-shadow:var(--shadow);margin-bottom:16px;text-align:center;}
+.fp-card-icon{font-size:40px;margin-bottom:8px;}
+.fp-card-title{font-size:16px;font-weight:700;margin-bottom:4px;}
+.fp-card-sub{font-size:12px;color:var(--text-s);}
+.fp-btn{background:var(--red);color:white;border:none;border-radius:var(--radius);padding:14px 28px;font-size:16px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 14px rgba(192,57,43,0.35);width:100%;max-width:300px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<div id="pin-screen" class="pin-screen">
+  <div class="pin-logo"><img src="logo.png" alt="Granada CF"></div>
+  <div class="pin-club">Granada CF · Sección Femenina</div>
+  <div class="pin-title">Wellness</div>
+  <div class="pin-sub">Introduce tu código de acceso<br>para entrar al cuestionario</div>
+  <div class="pin-card">
+    <div class="pin-player-name" id="pin-name">&nbsp;</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+      <div class="pin-dot" id="d4"></div><div class="pin-dot" id="d5"></div>
+      <div class="pin-dot" id="d6"></div><div class="pin-dot" id="d7"></div>
+    </div>
+    <input type="text" id="pin-input" class="pin-input" maxlength="8"
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+      placeholder="Tu código" oninput="onPinInput(this)" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="pin-btn" onclick="doLogin()">Acceder</button>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-hint">Código de 8 caracteres asignado por el staff</div>
+  </div>
+</div>
+
+<div id="wellness-screen" style="display:none;">
+  <div class="app-header">
+    <div class="header-top">
+      <div class="logo-wrap"><img src="logo.png" alt="GCF"></div>
+      <div style="flex:1;"><div class="header-club">Granada CF</div><div class="header-title">Wellness</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+        <div class="player-chip" id="w-player-chip">Jugadora</div>
+        <button class="logout-btn" onclick="logout()">Cambiar jugadora</button>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span id="prog-text">0 de 12 completadas</span><span id="prog-pct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="mode-switcher">
+      <button class="mode-btn active" onclick="goMode('wellness')">🛌 Wellness pre-entreno</button>
+      <button class="mode-btn" onclick="goMode('srpe')">💪 Valorar entrenamiento</button>
+    </div>
+    <div class="limit-notice" id="limit-notice">⏰ Completa este formulario <strong>antes del entrenamiento de hoy</strong>. El staff lo recibe al instante.</div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#E8F4FD;">🛌</div><div style="flex:1;"><div class="block-title" style="color:#1A5276;">Recuperación física</div><div class="block-sub">Sueño, fatiga y disponibilidad</div></div><div class="block-pts">25 pts</div></div>
+      <div class="block-body">
+        <div><div class="q-label">1. Calidad del sueño anoche</div><div class="scale-buttons" data-q="q1"><button class="scale-btn s1" onclick="selScale(this,'q1')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q1')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q1')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q1')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q1')" data-v="5">5</button></div><div class="scale-ends"><span>Muy mal</span><span>Muy bien</span></div></div>
+        <div><div class="q-label">2. Horas de sueño</div><div class="radio-list"><div class="radio-item" onclick="selRadio(this,'q2','1')"><div class="radio-dot"></div><div class="radio-text">Menos de 5 horas</div></div><div class="radio-item" onclick="selRadio(this,'q2','2')"><div class="radio-dot"></div><div class="radio-text">Entre 5 y 6 horas</div></div><div class="radio-item" onclick="selRadio(this,'q2','3')"><div class="radio-dot"></div><div class="radio-text">Entre 6 y 7 horas</div></div><div class="radio-item" onclick="selRadio(this,'q2','4')"><div class="radio-dot"></div><div class="radio-text">Entre 7 y 8 horas</div></div><div class="radio-item" onclick="selRadio(this,'q2','5')"><div class="radio-dot"></div><div class="radio-text">Más de 8 horas</div></div></div></div>
+        <div><div class="q-label">3. Fatiga general hoy</div><div class="scale-buttons" data-q="q3"><button class="scale-btn s5" onclick="selScale(this,'q3')" data-v="1">1</button><button class="scale-btn s4" onclick="selScale(this,'q3')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q3')" data-v="3">3</button><button class="scale-btn s2" onclick="selScale(this,'q3')" data-v="4">4</button><button class="scale-btn s1" onclick="selScale(this,'q3')" data-v="5">5</button></div><div class="scale-ends"><span>Poca fatiga</span><span>Mucha fatiga</span></div></div>
+        <div><div class="q-label">4. Dolor muscular (agujetas)</div><div class="scale-buttons" data-q="q4"><button class="scale-btn s5" onclick="selScale(this,'q4')" data-v="1">1</button><button class="scale-btn s4" onclick="selScale(this,'q4')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q4')" data-v="3">3</button><button class="scale-btn s2" onclick="selScale(this,'q4')" data-v="4">4</button><button class="scale-btn s1" onclick="selScale(this,'q4')" data-v="5">5</button></div><div class="scale-ends"><span>Sin dolor</span><span>Dolor alto</span></div></div>
+        <div><div class="q-label">5. Disponibilidad para entrenar</div><div class="radio-list"><div class="radio-item" onclick="selRadio(this,'q5','5')"><div class="radio-dot"></div><div class="radio-text">✅ Sí, estoy disponible</div></div><div class="radio-item" onclick="selRadio(this,'q5','1')"><div class="radio-dot"></div><div class="radio-text">❌ No, no puedo entrenar hoy</div></div></div></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#EBF5FB;">🧠</div><div style="flex:1;"><div class="block-title" style="color:#1A5276;">Estado mental</div><div class="block-sub">Ánimo, estrés y motivación</div></div><div class="block-pts">15 pts</div></div>
+      <div class="block-body">
+        <div><div class="q-label">6. Estado de ánimo</div><div class="scale-buttons" data-q="q6"><button class="scale-btn s1" onclick="selScale(this,'q6')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q6')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q6')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q6')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q6')" data-v="5">5</button></div><div class="scale-ends"><span>Muy bajo</span><span>Muy bueno</span></div></div>
+        <div><div class="q-label">7. Estrés extradeportivo</div><div class="q-hint">Estudios, trabajo, familia...</div><div class="scale-buttons" data-q="q7"><button class="scale-btn s1" onclick="selScale(this,'q7')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q7')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q7')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q7')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q7')" data-v="5">5</button></div><div class="scale-ends"><span>Estrés alto</span><span>Sin estrés</span></div></div>
+        <div><div class="q-label">8. Motivación para entrenar</div><div class="scale-buttons" data-q="q8"><button class="scale-btn s1" onclick="selScale(this,'q8')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q8')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q8')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q8')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q8')" data-v="5">5</button></div><div class="scale-ends"><span>Ninguna</span><span>Muy alta</span></div></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#FEF9E7;">⚡</div><div style="flex:1;"><div class="block-title" style="color:#7D6608;">Nutrición e hidratación</div><div class="block-sub">Desde el último entrenamiento</div></div><div class="block-pts">10 pts</div></div>
+      <div class="block-body">
+        <div><div class="q-label">9. Alimentación</div><div class="scale-buttons" data-q="q9"><button class="scale-btn s1" onclick="selScale(this,'q9')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q9')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q9')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q9')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q9')" data-v="5">5</button></div><div class="scale-ends"><span>Muy mala</span><span>Excelente</span></div></div>
+        <div><div class="q-label">10. Hidratación</div><div class="scale-buttons" data-q="q10"><button class="scale-btn s1" onclick="selScale(this,'q10')" data-v="1">1</button><button class="scale-btn s2" onclick="selScale(this,'q10')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q10')" data-v="3">3</button><button class="scale-btn s4" onclick="selScale(this,'q10')" data-v="4">4</button><button class="scale-btn s5" onclick="selScale(this,'q10')" data-v="5">5</button></div><div class="scale-ends"><span>Muy poca</span><span>Muy buena</span></div></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#FDEDEC;">🌙</div><div style="flex:1;"><div class="block-title" style="color:#922B21;">Ciclo menstrual</div><div class="block-sub">Contexto para el staff</div></div><div class="block-pts">Contexto</div></div>
+      <div class="block-body">
+        <div class="cycle-note">🔒 Solo lo ve el cuerpo técnico. Ayuda a adaptar la sesión a tu estado real.</div>
+        <div><div class="q-label">11. Fase actual del ciclo</div>
+          <div class="phase-list">
+            <div class="phase-item" onclick="selRadio(this,'q11','1')"><div class="phase-dot" style="background:#E74C3C;"></div><div><div class="phase-name">Menstruación</div><div class="phase-days">Día 1–5</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','2')"><div class="phase-dot" style="background:#E67E22;"></div><div><div class="phase-name">Folicular temprana</div><div class="phase-days">Día 6–10</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','3')"><div class="phase-dot" style="background:#1D9E75;"></div><div><div class="phase-name">Ovulación ← Pico de rendimiento</div><div class="phase-days">Día 11–16</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','4')"><div class="phase-dot" style="background:#2980B9;"></div><div><div class="phase-name">Lútea temprana ← Alta disponibilidad</div><div class="phase-days">Día 17–23</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','5')"><div class="phase-dot" style="background:#8E44AD;"></div><div><div class="phase-name">Lútea tardía / Premenstrual</div><div class="phase-days">Día 24–28</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','6')"><div class="phase-dot" style="background:#888;"></div><div><div class="phase-name">Anticonceptivos hormonales</div><div class="phase-days">Píldora, DIU hormonal...</div></div></div>
+            <div class="phase-item" onclick="selRadio(this,'q11','7')"><div class="phase-dot" style="background:#ccc;"></div><div><div class="phase-name">No lo sé / ciclo irregular</div><div class="phase-days"></div></div></div>
+          </div>
+        </div>
+        <div><div class="q-label">12. Síntomas hoy</div><div class="q-hint">Selecciona todos los que tengas</div>
+          <div class="chip-grid" id="chips-q12">
+            <div class="chip" onclick="togChip(this)">Dismenorrea</div><div class="chip" onclick="togChip(this)">Fatiga del ciclo</div>
+            <div class="chip" onclick="togChip(this)">Distensión</div><div class="chip" onclick="togChip(this)">Cefalea</div>
+            <div class="chip" onclick="togChip(this)">Cambios de humor</div><div class="chip" onclick="togChip(this)">Náuseas</div>
+            <div class="chip" onclick="togChip(this)">Alteración del sueño</div><div class="chip none" onclick="togChip(this)">Ninguno</div>
+          </div>
+        </div>
+        <div><div class="q-label">13. Impacto del ciclo en el rendimiento hoy</div><div class="scale-buttons" data-q="q13"><button class="scale-btn s5" onclick="selScale(this,'q13')" data-v="1">1</button><button class="scale-btn s4" onclick="selScale(this,'q13')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q13')" data-v="3">3</button><button class="scale-btn s2" onclick="selScale(this,'q13')" data-v="4">4</button><button class="scale-btn s1" onclick="selScale(this,'q13')" data-v="5">5</button></div><div class="scale-ends"><span>Sin impacto</span><span>Mucho impacto</span></div></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#F4ECF7;">🩹</div><div style="flex:1;"><div class="block-title" style="color:#6C3483;">Molestias físicas</div><div class="block-sub">Alerta automática al staff si hay dolor</div></div><div class="block-pts">5 pts</div></div>
+      <div class="block-body">
+        <div><div class="q-label">14. Nivel de dolor o molestia hoy</div><div class="scale-buttons" data-q="q14"><button class="scale-btn s5" onclick="selScale(this,'q14')" data-v="1">1</button><button class="scale-btn s4" onclick="selScale(this,'q14')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'q14')" data-v="3">3</button><button class="scale-btn s2" onclick="selScale(this,'q14')" data-v="4">4</button><button class="scale-btn s1" onclick="selScale(this,'q14')" data-v="5">5</button></div><div class="scale-ends"><span>Sin molestias</span><span>Dolor severo</span></div></div>
+        <div id="zona-wrap" style="display:none;"><div class="q-label">15. Zona afectada</div><input type="text" class="text-input" id="q15" placeholder="Ej: Rodilla derecha — crujido al bajar escaleras"></div>
+        <div><div class="q-label">16. Comentario para el staff <span style="font-weight:400;color:var(--gray);font-size:12px;">(opcional)</span></div><textarea class="text-input" id="q16" rows="3" placeholder="Comenta lo que sea necesario para que el staff reciba toda la información."></textarea></div>
+      </div>
+    </div>
+    <div style="padding:8px 0 0;">
+      <button class="submit-btn" id="w-submit-btn" onclick="submitWellness()">Enviar al staff</button>
+      <div class="privacy-note">🔒 Datos confidenciales · Solo los ve el staff de Granada CF</div>
+    </div>
+  </div>
+</div>
+
+<div id="done-screen" class="fullpage">
+  <div class="fp-logo"><img src="logo.png" alt="Granada CF"></div>
+  <div class="fp-icon">✅</div>
+  <div class="fp-title">Wellness completado</div>
+  <div class="fp-text" id="done-text">Ya rellenaste el wellness de hoy.</div>
+  <button id="btn-valorar" class="fp-btn" onclick="goMode('srpe')">💪 Valorar el entrenamiento</button>
+  <div id="txt-valorar" style="font-size:12px;color:var(--gray);">Recuerda rellenar el RPE después del entreno</div>
+  <button onclick="logout()" style="background:none;border:none;color:var(--gray);font-size:12px;cursor:pointer;margin-top:16px;text-decoration:underline;">Cambiar jugadora</button>
+</div>
+
+<div id="done-srpe-screen" class="fullpage">
+  <div class="fp-logo"><img src="logo.png" alt="Granada CF"></div>
+  <div class="fp-icon">💪</div>
+  <div class="fp-title">sRPE ya completado</div>
+  <div class="fp-text" id="done-srpe-text">Ya valoraste el entrenamiento de hoy.</div>
+  <div class="fp-card"><div class="fp-card-icon">✅</div><div class="fp-card-title">Valoración registrada</div><div class="fp-card-sub">El staff tiene tus datos de hoy.</div></div>
+  <button onclick="logout()" style="background:none;border:none;color:var(--gray);font-size:12px;cursor:pointer;margin-top:16px;text-decoration:underline;">Cambiar jugadora</button>
+</div>
+
+<div id="srpe-screen" style="display:none;">
+  <div class="app-header">
+    <div class="header-top">
+      <div class="logo-wrap"><img src="logo.png" alt="GCF"></div>
+      <div style="flex:1;"><div class="header-club">Granada CF</div><div class="header-title">Wellness</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+        <div class="player-chip" id="s-player-chip">Jugadora</div>
+        <button class="logout-btn" onclick="logout()">Cambiar jugadora</button>
+      </div>
+    </div>
+  </div>
+  <div class="main" style="padding-top:14px;">
+    <div class="mode-switcher">
+      <button class="mode-btn" onclick="goMode('wellness')">🛌 Wellness pre-entreno</button>
+      <button class="mode-btn active" onclick="goMode('srpe')">💪 Valorar entrenamiento</button>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#E8F5E9;">🏋️</div><div style="flex:1;"><div class="block-title" style="color:#1B5E20;">RPE Gimnasio</div><div class="block-sub">¿Cómo fue el esfuerzo de la sesión de gym?</div></div></div>
+      <div class="block-body">
+        <div><div class="q-hint">Valora el esfuerzo percibido durante la sesión de gimnasio de hoy.</div>
+          <div class="srpe-list" id="srpe-gym-list">
+            <div class="srpe-row" onclick="selSRPEGym(this,1)"><div class="srpe-num" style="background:#1D9E75;">1</div><div><div style="font-size:13px;font-weight:600;">Muy, muy fácil</div><div style="font-size:11px;color:var(--gray);">Sin fatiga ni cansancio</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,2)"><div class="srpe-num" style="background:#27AE60;">2</div><div><div style="font-size:13px;font-weight:600;">Fácil</div><div style="font-size:11px;color:var(--gray);">Fatiga mínima</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,3)"><div class="srpe-num" style="background:#97C459;">3</div><div><div style="font-size:13px;font-weight:600;">Moderado</div><div style="font-size:11px;color:var(--gray);">Algo de cansancio</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,4)"><div class="srpe-num" style="background:#EF9F27;">4</div><div><div style="font-size:13px;font-weight:600;">Algo duro</div><div style="font-size:11px;color:var(--gray);">Cansancio notable</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,5)"><div class="srpe-num" style="background:#E67E22;">5</div><div><div style="font-size:13px;font-weight:600;">Duro</div><div style="font-size:11px;color:var(--gray);">Cansancio considerable</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,6)"><div class="srpe-num" style="background:#E67E22;">6</div><div><div style="font-size:13px;font-weight:600;">Duro+</div><div style="font-size:11px;color:var(--gray);">Bastante fatigada</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,7)"><div class="srpe-num" style="background:#E74C3C;">7</div><div><div style="font-size:13px;font-weight:600;">Muy duro</div><div style="font-size:11px;color:var(--gray);">Muy fatigada</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,8)"><div class="srpe-num" style="background:#C0392B;">8</div><div><div style="font-size:13px;font-weight:600;">Muy muy duro</div><div style="font-size:11px;color:var(--gray);">Fatiga alta</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,9)"><div class="srpe-num" style="background:#922B21;">9</div><div><div style="font-size:13px;font-weight:600;">Casi máximo</div><div style="font-size:11px;color:var(--gray);">Agotada</div></div></div>
+            <div class="srpe-row" onclick="selSRPEGym(this,10)"><div class="srpe-num" style="background:#7B241C;">10</div><div><div style="font-size:13px;font-weight:600;">Máximo esfuerzo</div><div style="font-size:11px;color:var(--gray);">Agotamiento total</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#E8F4FD;">⚽</div><div style="flex:1;"><div class="block-title" style="color:#1A5276;">RPE Campo</div><div class="block-sub">¿Cómo fue el esfuerzo del entrenamiento de campo?</div></div></div>
+      <div class="block-body">
+        <div><div class="q-hint">Valora el esfuerzo percibido durante el entrenamiento de campo.</div>
+          <div class="srpe-list" id="srpe-campo-list">
+            <div class="srpe-row" onclick="selSRPECampo(this,1)"><div class="srpe-num" style="background:#1D9E75;">1</div><div><div style="font-size:13px;font-weight:600;">Muy, muy fácil</div><div style="font-size:11px;color:var(--gray);">Sin fatiga ni cansancio</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,2)"><div class="srpe-num" style="background:#27AE60;">2</div><div><div style="font-size:13px;font-weight:600;">Fácil</div><div style="font-size:11px;color:var(--gray);">Fatiga mínima</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,3)"><div class="srpe-num" style="background:#97C459;">3</div><div><div style="font-size:13px;font-weight:600;">Moderado</div><div style="font-size:11px;color:var(--gray);">Algo de cansancio</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,4)"><div class="srpe-num" style="background:#EF9F27;">4</div><div><div style="font-size:13px;font-weight:600;">Algo duro</div><div style="font-size:11px;color:var(--gray);">Cansancio notable</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,5)"><div class="srpe-num" style="background:#E67E22;">5</div><div><div style="font-size:13px;font-weight:600;">Duro</div><div style="font-size:11px;color:var(--gray);">Cansancio considerable</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,6)"><div class="srpe-num" style="background:#E67E22;">6</div><div><div style="font-size:13px;font-weight:600;">Duro+</div><div style="font-size:11px;color:var(--gray);">Bastante fatigada</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,7)"><div class="srpe-num" style="background:#E74C3C;">7</div><div><div style="font-size:13px;font-weight:600;">Muy duro</div><div style="font-size:11px;color:var(--gray);">Muy fatigada</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,8)"><div class="srpe-num" style="background:#C0392B;">8</div><div><div style="font-size:13px;font-weight:600;">Muy muy duro</div><div style="font-size:11px;color:var(--gray);">Fatiga alta</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,9)"><div class="srpe-num" style="background:#922B21;">9</div><div><div style="font-size:13px;font-weight:600;">Casi máximo</div><div style="font-size:11px;color:var(--gray);">Agotada</div></div></div>
+            <div class="srpe-row" onclick="selSRPECampo(this,10)"><div class="srpe-num" style="background:#7B241C;">10</div><div><div style="font-size:13px;font-weight:600;">Máximo esfuerzo</div><div style="font-size:11px;color:var(--gray);">Agotamiento total</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-header"><div class="block-icon" style="background:#F4ECF7;">🩹</div><div style="flex:1;"><div class="block-title" style="color:#6C3483;">Molestias durante el entreno</div><div class="block-sub">Alerta automática al staff si hay dolor</div></div></div>
+      <div class="block-body">
+        <div><div class="q-label">Nivel de molestia durante la sesión</div><div class="scale-buttons" data-q="smol"><button class="scale-btn s5" onclick="selScale(this,'smol')" data-v="1">1</button><button class="scale-btn s4" onclick="selScale(this,'smol')" data-v="2">2</button><button class="scale-btn s3" onclick="selScale(this,'smol')" data-v="3">3</button><button class="scale-btn s2" onclick="selScale(this,'smol')" data-v="4">4</button><button class="scale-btn s1" onclick="selScale(this,'smol')" data-v="5">5</button></div><div class="scale-ends"><span>Sin molestias</span><span>Dolor intenso</span></div></div>
+        <div id="zona-srpe-wrap" style="display:none;"><div class="q-label">Zona afectada</div><input type="text" class="text-input" id="zona-srpe" placeholder="Ej: Gemelo izquierdo — pinchazo al sprint"></div>
+        <div><div class="q-label">Comentario <span style="font-weight:400;color:var(--gray);font-size:12px;">(opcional)</span></div><textarea class="text-input" id="srpe-coment" rows="3" placeholder="Cómo te sentiste, algo que notaste..."></textarea></div>
+      </div>
+    </div>
+    <div style="padding:8px 0 0;">
+      <button class="submit-btn" id="s-submit-btn" onclick="submitSRPE()">Enviar valoración</button>
+      <div class="privacy-note">🔒 Datos confidenciales · Solo los ve el staff de Granada CF</div>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-screen" class="fullpage">
+  <div class="fp-logo"><img src="logo.png" alt="Granada CF"></div>
+  <div class="fp-icon" id="c-icon">✅</div>
+  <div class="fp-title" id="c-title">¡Enviado!</div>
+  <div class="fp-text" id="c-text">El staff lo ha recibido. 💪</div>
+  <div class="fp-card">
+    <div class="fp-card-icon" id="c-card-icon">📋</div>
+    <div class="fp-card-title" id="c-card-title">Completado</div>
+    <div class="fp-card-sub" id="c-card-sub">El staff preparará la sesión según tu estado.</div>
+  </div>
+  <div style="font-size:12px;color:var(--gray);" id="c-footer">Recibirás el recordatorio del sRPE tras el entrenamiento</div>
+</div>
+
+<script>
+var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwvBJlsC4nI_rRT2k1lwJhMOdcQsfqO2ELMlNjHkMX4lzndjgylWLKsRArjQq797M5bMQ/exec';
+var PLAYERS = {};
+var currentPlayer = null;
+var ans = {q1:0,q2:0,q3:0,q4:0,q5:0,q6:0,q7:0,q8:0,q9:0,q10:0,q11:0,q13:0,q14:0,smol:0};
+var SCORE_KEYS = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q13','q14'];
+var srpeVal = 0;
+var srpeGymVal = 0;
+var srpeCampoVal = 0;
+var today = new Date().toISOString().substring(0,10);
+var diaDescanso = localStorage.getItem('gcf_descanso_' + new Date().toISOString().substring(0,10)) === '1';
+var diaPartido = localStorage.getItem('gcf_partido_' + new Date().toISOString().substring(0,10)) === '1';
+var hayGym = localStorage.getItem('gcf_gym_' + new Date().toISOString().substring(0,10)) === '1';
+
+// ── KEY por jugadora usando NOMBRE (no email) ─────────
+// Esto garantiza que cada jugadora tenga su propio registro
+// incluso si no tiene email o comparte dispositivo
+function playerKey() {
+  return currentPlayer ? currentPlayer.name.replace(/[^a-z0-9]/gi,'').toLowerCase() : 'unknown';
+}
+
+function loadPlayers() {
+  var cached = localStorage.getItem('gcf_players');
+  if (cached) { try { PLAYERS = JSON.parse(cached); } catch(e) {} }
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', WEBAPP_URL + '?action=getPlayers&v=' + Date.now(), true);
+  xhr.onload = function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d && d.players && Object.keys(d.players).length > 0) {
+        PLAYERS = d.players;
+        localStorage.setItem('gcf_players', JSON.stringify(PLAYERS));
+      }
+    } catch(e) {}
+  };
+  xhr.send();
+}
+
+function onPinInput(inp) {
+  var clean = inp.value.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,8);
+  inp.value = clean;
+  for (var i=0;i<8;i++) document.getElementById('d'+i).classList.toggle('filled', i < clean.length);
+  document.getElementById('pin-error').textContent = '';
+  var p = PLAYERS[clean];
+  document.getElementById('pin-name').textContent = (clean.length===8 && p) ? p.name : ' ';
+}
+
+function doLogin() {
+  var code = (document.getElementById('pin-input').value||'').toUpperCase().trim();
+  var player = PLAYERS[code];
+  if (player) {
+    for (var i=0;i<8;i++) { var d=document.getElementById('d'+i); d.classList.remove('filled'); d.classList.add('success'); }
+    currentPlayer = player;
+    localStorage.setItem('gcf_current_player', JSON.stringify(player));
+    setTimeout(enterApp, 500);
+  } else {
+    for (var i=0;i<8;i++) { var d=document.getElementById('d'+i); d.classList.remove('filled'); d.classList.add('error'); }
+    document.getElementById('pin-error').textContent = 'Código incorrecto. Compruébalo e inténtalo de nuevo.';
+    setTimeout(function() {
+      document.getElementById('pin-input').value='';
+      for (var i=0;i<8;i++) document.getElementById('d'+i).classList.remove('error','filled');
+    }, 1000);
+  }
+}
+
+function checkSession() {
+  var saved = localStorage.getItem('gcf_current_player');
+  if (saved) { try { currentPlayer = JSON.parse(saved); enterApp(); return; } catch(e) {} }
+  document.getElementById('pin-screen').style.display = 'flex';
+}
+
+function enterApp() {
+  document.getElementById('pin-screen').style.display = 'none';
+  var name = currentPlayer ? currentPlayer.name : 'Jugadora';
+  document.getElementById('w-player-chip').textContent = name;
+  document.getElementById('s-player-chip').textContent = name;
+
+  // Consultar al script si ya respondió hoy
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', WEBAPP_URL + '?action=checkDone&name=' + encodeURIComponent(currentPlayer ? currentPlayer.name : '') + '&v=' + Date.now(), true);
+  xhr.onload = function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.wellnessDone) localStorage.setItem('gcf_w_done_' + today + '_' + playerKey(), '1');
+      if (d.srpeDone)    localStorage.setItem('gcf_s_done_' + today + '_' + playerKey(), '1');
+      if (d.diaDescanso) {
+        diaDescanso = true;
+        localStorage.setItem('gcf_descanso_' + today, '1');
+      }
+      if (d.diaPartido) {
+        diaPartido = true;
+        localStorage.setItem('gcf_partido_' + today, '1');
+      }
+      if (d.hayGym) {
+        hayGym = true;
+        localStorage.setItem('gcf_gym_' + today, '1');
+      }
+    } catch(e) {}
+    _decidirPantalla();
+  };
+  xhr.onerror = function() { _decidirPantalla(); };
+  xhr.send();
+}
+
+function _decidirPantalla() {
+  var donePRE  = localStorage.getItem('gcf_w_done_' + today + '_' + playerKey());
+  var doneSRPE = localStorage.getItem('gcf_s_done_' + today + '_' + playerKey());
+  var hour = new Date().getHours();
+
+  if (diaDescanso) {
+    if (donePRE) { showDone(); } else { goMode('wellness'); }
+    return;
+  }
+  if (donePRE && doneSRPE) {
+    if (hour >= 15) { showDoneSRPE(); } else { showDone(); }
+  } else if (donePRE) {
+    if (hour >= 15) { goMode('srpe'); } else { showDone(); }
+  } else if (doneSRPE) {
+    goMode('wellness');
+  } else {
+    goMode(hour >= 15 ? 'srpe' : 'wellness');
+  }
+}
+
+function goMode(mode) {
+  document.getElementById('wellness-screen').style.display  = 'none';
+  document.getElementById('srpe-screen').style.display      = 'none';
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('done-srpe-screen').classList.remove('show');
+  document.getElementById('confirm-screen').classList.remove('show');
+  
+  // Ocultar pestaña sRPE en días de descanso
+  document.querySelectorAll('.mode-btn').forEach(function(b, i) {
+    if (i === 1) b.style.display = diaDescanso ? 'none' : '';
+  });
+
+  if (mode === 'wellness') {
+    if (localStorage.getItem('gcf_w_done_' + today + '_' + playerKey())) { showDone(); return; }
+    document.getElementById('wellness-screen').style.display = 'block';
+    var notice = document.getElementById('limit-notice');
+    if (notice) notice.innerHTML = diaDescanso
+      ? '🛌 Hoy es día de descanso. Completa el wellness para que el staff conozca tu estado.'
+      : diaPartido
+      ? '🏆 ¡Hoy hay partido! Completa el wellness <strong>antes del partido de hoy</strong>. El staff lo recibe al instante.'
+      : '⏰ Completa este formulario <strong>antes del entrenamiento de hoy</strong>. El staff lo recibe al instante.';
+  } else {
+    if (localStorage.getItem('gcf_s_done_' + today + '_' + playerKey())) { showDoneSRPE(); return; }
+    document.getElementById('srpe-screen').style.display = 'block';
+    var bloqueGym = document.getElementById('srpe-gym-list');
+    if (bloqueGym) bloqueGym.closest('.block').style.display = (hayGym && !diaPartido) ? '' : 'none';
+  }
+  window.scrollTo(0,0);
+}
+
+function showDone() {
+  document.getElementById('wellness-screen').style.display = 'none';
+  document.getElementById('srpe-screen').style.display     = 'none';
+  document.getElementById('done-screen').classList.add('show');
+  if (currentPlayer) document.getElementById('done-text').innerHTML = diaDescanso
+    ? '¡Buen trabajo, <strong>' + currentPlayer.name.split(' ')[0] + '</strong>! Ya rellenaste el wellness de hoy.<br>¡Descansa bien! 💤'
+    : diaPartido
+    ? '¡Buen trabajo, <strong>' + currentPlayer.name.split(' ')[0] + '</strong>! Ya rellenaste el wellness de hoy.<br>¡Mucha fuerza en el partido! 🏆'
+    : '¡Buen trabajo, <strong>' + currentPlayer.name.split(' ')[0] + '</strong>! Ya rellenaste el wellness de hoy.<br>Recuerda valorar el entrenamiento después del entreno.';
+  var btnSRPE = document.getElementById('btn-valorar');
+  if (btnSRPE) btnSRPE.style.display = diaDescanso ? 'none' : '';
+  var txtSRPE = document.getElementById('txt-valorar');
+  if (txtSRPE) txtSRPE.style.display = diaDescanso ? 'none' : '';
+  var btnValorar = document.getElementById('btn-valorar');
+  if (btnValorar) btnValorar.textContent = diaPartido ? '🏆 Valorar el partido' : '💪 Valorar el entrenamiento';
+  window.scrollTo(0,0);
+}
+
+function showDoneSRPE() {
+  document.getElementById('wellness-screen').style.display  = 'none';
+  document.getElementById('srpe-screen').style.display      = 'none';
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('done-srpe-screen').classList.add('show');
+  if (currentPlayer) document.getElementById('done-srpe-text').innerHTML = diaPartido
+    ? '¡Buen trabajo, <strong>' + currentPlayer.name.split(' ')[0] + '</strong>! Ya valoraste el partido de hoy. ¡Gran esfuerzo! 🏆'
+    : '¡Buen trabajo, <strong>' + currentPlayer.name.split(' ')[0] + '</strong>! Ya valoraste el entrenamiento de hoy.';
+  window.scrollTo(0,0);
+}
+
+function selScale(btn, key) {
+  btn.closest('[data-q]').querySelectorAll('.scale-btn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  ans[key] = parseInt(btn.dataset.v);
+  if (key==='q14') document.getElementById('zona-wrap').style.display = ans.q14>=3?'block':'none';
+  if (key==='smol') document.getElementById('zona-srpe-wrap').style.display = ans.smol>=3?'block':'none';
+  updateProgress();
+}
+
+function selRadio(item, key, val) {
+  item.parentElement.querySelectorAll('.radio-item,.phase-item').forEach(function(i){i.classList.remove('sel');});
+  item.classList.add('sel');
+  ans[key] = parseInt(val);
+  updateProgress();
+}
+
+function togChip(chip) {
+  var isNone = chip.classList.contains('none');
+  var grid = chip.parentElement;
+  if (isNone) { grid.querySelectorAll('.chip').forEach(function(c){c.classList.remove('sel');});}
+  else { grid.querySelector('.none').classList.remove('sel'); }
+  chip.classList.toggle('sel');
+}
+
+function selSRPE(row, val) {
+  document.querySelectorAll('.srpe-row').forEach(function(r){r.classList.remove('sel');});
+  row.classList.add('sel');
+  srpeVal = val;
+}
+
+function selSRPEGym(row, val) {
+  document.querySelectorAll('#srpe-gym-list .srpe-row').forEach(function(r){r.classList.remove('sel');});
+  row.classList.add('sel');
+  srpeGymVal = val;
+}
+
+function selSRPECampo(row, val) {
+  document.querySelectorAll('#srpe-campo-list .srpe-row').forEach(function(r){r.classList.remove('sel');});
+  row.classList.add('sel');
+  srpeCampoVal = val;
+}
+
+function updateProgress() {
+  var done = SCORE_KEYS.filter(function(k){return ans[k]>0;}).length;
+  var pct  = Math.round(done/SCORE_KEYS.length*100);
+  document.getElementById('prog-bar').style.width  = pct+'%';
+  document.getElementById('prog-text').textContent = done+' de '+SCORE_KEYS.length+' completadas';
+  document.getElementById('prog-pct').textContent  = pct+'%';
+}
+
+// ── Submit wellness — envío único garantizado ─────────
+var sending = false;
+function submitWellness() {
+  if (sending) return;
+  var req = ['q1','q2','q3','q4','q5','q6','q7','q8'];
+  if (req.some(function(k){return ans[k]===0;})) { toast('Completa los bloques 1 y 2 antes de enviar'); return; }
+  sending = true;
+  var btn = document.getElementById('w-submit-btn');
+  btn.textContent='Enviando...'; btn.disabled=true;
+  var syms = [];
+  document.querySelectorAll('#chips-q12 .chip.sel').forEach(function(c){syms.push(c.textContent.trim());});
+  var payload = {
+    action:'submitWellness',
+    name:  currentPlayer?currentPlayer.name:'',
+    email: currentPlayer?currentPlayer.email:'',
+    q1:ans.q1,q2:ans.q2,q3:ans.q3,q4:ans.q4,q5:ans.q5,
+    q6:ans.q6,q7:ans.q7,q8:ans.q8,q9:ans.q9,q10:ans.q10,
+    q11:ans.q11,q12:syms,q13:ans.q13,q14:ans.q14,
+    q15:document.getElementById('q15')?document.getElementById('q15').value:'',
+    q16:document.getElementById('q16').value||'',
+    timestamp:new Date().toISOString()
+  };
+  // Guardar en localStorage ANTES del fetch para evitar duplicados
+  // si el usuario pulsa dos veces o la red es lenta
+  localStorage.setItem('gcf_w_done_'+today+'_'+playerKey(),'1');
+  _enviarConFormulario(payload, doneWellness);
+}
+
+function doneWellness() {
+  document.getElementById('wellness-screen').style.display='none';
+  document.getElementById('confirm-screen').classList.add('show');
+  if (diaDescanso) {
+    document.getElementById('c-footer').textContent='¡Buen descanso! 💤';
+    return;
+  }
+  document.getElementById('c-icon').textContent='✅';
+  document.getElementById('c-title').textContent='¡Wellness enviado!';
+  if(currentPlayer) document.getElementById('c-text').innerHTML='Buen trabajo, <strong>'+currentPlayer.name.split(' ')[0]+'</strong>! El staff lo ha recibido. 💪';
+  document.getElementById('c-card-icon').textContent='📋';
+  document.getElementById('c-card-title').textContent='Recibido por el staff';
+  document.getElementById('c-card-sub').textContent='Prepararán la sesión según tu estado de hoy.';
+  document.getElementById('c-footer').textContent = diaPartido
+    ? '¡Mucha fuerza hoy! Recuerda valorar el partido después. 🏆'
+    : 'Recuerda valorar el entrenamiento después del entreno.';
+  window.scrollTo(0,0);
+}
+
+// ── Submit sRPE — envío único garantizado ─────────────
+var sendingSRPE = false;
+function submitSRPE() {
+  if (sendingSRPE) return;
+  if (!hayGym || diaPartido) { srpeGymVal = 0; }
+  else if (!srpeGymVal) { toast('Selecciona el esfuerzo del gimnasio'); return; }
+  if (!srpeCampoVal) { toast('Selecciona el esfuerzo del campo'); return; }
+  if (!ans.smol) { toast('Indica si tuviste molestias'); return; }
+  sendingSRPE = true;
+  var btn = document.getElementById('s-submit-btn');
+  btn.textContent='Enviando...'; btn.disabled=true;
+  var payload = {
+    action:'submitSRPE',
+    name:  currentPlayer?currentPlayer.name:'',
+    email: currentPlayer?currentPlayer.email:'',
+    srpe_campo: String(srpeCampoVal),
+    srpe_gym:   String(srpeGymVal),
+    molestia: ans.smol,
+    zona: document.getElementById('zona-srpe').value||'',
+    comentario: document.getElementById('srpe-coment').value||'',
+    timestamp: new Date().toISOString()
+  };
+  // Guardar en localStorage ANTES del fetch para evitar duplicados
+  localStorage.setItem('gcf_s_done_'+today+'_'+playerKey(),'1');
+  _enviarConFormulario(payload, doneSRPE);
+}
+
+function doneSRPE() {
+  document.getElementById('srpe-screen').style.display='none';
+  document.getElementById('confirm-screen').classList.add('show');
+  document.getElementById('c-icon').textContent='💪';
+  document.getElementById('c-title').textContent='¡Valoración enviada!';
+  if(currentPlayer) document.getElementById('c-text').innerHTML='Buen trabajo, <strong>'+currentPlayer.name.split(' ')[0]+'</strong>. Seguimos.';
+  document.getElementById('c-card-icon').textContent='💤';
+  document.getElementById('c-card-title').style.color='#1A1A1A';
+  document.getElementById('c-card-title').textContent='';
+  document.getElementById('c-card-sub').textContent = diaPartido
+    ? '¡Gran partido hoy! Ahora toca recuperar bien. 💪'
+    : 'Recuerda: momento de trabajo invisible. Descansa y recupérate bien.';
+  document.getElementById('c-footer').textContent='';
+  window.scrollTo(0,0);
+}
+
+function toast(msg) {
+  var t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;max-width:280px;text-align:center;';
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();},3000);
+}
+
+function logout() {
+  if (!confirm('¿Cerrar sesión de ' + (currentPlayer ? currentPlayer.name : 'esta jugadora') + '?')) return;
+  localStorage.removeItem('gcf_current_player');
+  currentPlayer = null;
+  document.getElementById('wellness-screen').style.display  = 'none';
+  document.getElementById('srpe-screen').style.display      = 'none';
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('done-srpe-screen').classList.remove('show');
+  document.getElementById('confirm-screen').classList.remove('show');
+  document.getElementById('pin-input').value = '';
+  for (var i=0;i<8;i++) document.getElementById('d'+i).classList.remove('filled','success','error');
+  document.getElementById('pin-name').innerHTML = '&nbsp;';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-screen').style.display = 'flex';
+  window.scrollTo(0,0);
+}
+
+
+function _enviarConFormulario(payload, callback) {
+  var params = Object.keys(payload).map(function(k) {
+    var v = payload[k];
+    if (Array.isArray(v)) v = v.join(';');
+    return encodeURIComponent(k) + '=' + encodeURIComponent(v == null ? '' : v);
+  }).join('&');
+  var url = WEBAPP_URL + '?' + params;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.onreadystatechange = function() {};
+  xhr.send();
+  setTimeout(callback, 1000);
+}
+
+loadPlayers();
+checkSession();
+</script>
+</body>
+</html>
